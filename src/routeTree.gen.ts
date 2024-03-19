@@ -17,9 +17,8 @@ import { Route as rootRoute } from './routes/__root'
 // Create Virtual Routes
 
 const ProjectsLazyImport = createFileRoute('/projects')()
-const AboutLazyImport = createFileRoute('/about')()
+const DetailLazyImport = createFileRoute('/detail')()
 const IndexLazyImport = createFileRoute('/')()
-const ProjectDetailLazyImport = createFileRoute('/project/detail')()
 
 // Create/Update Routes
 
@@ -28,22 +27,15 @@ const ProjectsLazyRoute = ProjectsLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/projects.lazy').then((d) => d.Route))
 
-const AboutLazyRoute = AboutLazyImport.update({
-  path: '/about',
+const DetailLazyRoute = DetailLazyImport.update({
+  path: '/detail',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
+} as any).lazy(() => import('./routes/detail.lazy').then((d) => d.Route))
 
 const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
-
-const ProjectDetailLazyRoute = ProjectDetailLazyImport.update({
-  path: '/project/detail',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() =>
-  import('./routes/project.detail.lazy').then((d) => d.Route),
-)
 
 // Populate the FileRoutesByPath interface
 
@@ -53,16 +45,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
-    '/about': {
-      preLoaderRoute: typeof AboutLazyImport
+    '/detail': {
+      preLoaderRoute: typeof DetailLazyImport
       parentRoute: typeof rootRoute
     }
     '/projects': {
       preLoaderRoute: typeof ProjectsLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/project/detail': {
-      preLoaderRoute: typeof ProjectDetailLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -72,9 +60,8 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren([
   IndexLazyRoute,
-  AboutLazyRoute,
+  DetailLazyRoute,
   ProjectsLazyRoute,
-  ProjectDetailLazyRoute,
 ])
 
 /* prettier-ignore-end */
