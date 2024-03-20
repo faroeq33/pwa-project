@@ -1,25 +1,13 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { ProjectMeta } from "../types/projects";
+import useProjects from "../hooks/useProjects";
 
 export const Route = createFileRoute("/projects")({
   component: Projects,
 });
 
 function Projects() {
-  const [projects, setProjects] = useState<ProjectMeta[]>([]);
-
-  useEffect(() => {
-    axios
-      .get("https://cmgt.hr.nl/api/projects/?page=1")
-      .then((response) => {
-        // console.log(response.data.data as ProjectMeta[]);
-        setProjects(response.data.data as ProjectMeta[]);
-      })
-      .catch((error) => {
-        console.error("Error fetching projects:", error);
-      });
-  }, []);
+  const { projects } = useProjects();
 
   return (
     <>
@@ -67,66 +55,4 @@ function Projects() {
       </section>{" "}
     </>
   );
-}
-
-export interface ProjectsResponse {
-  data: ProjectMeta[];
-  links: PaginationLinks;
-  meta: Meta;
-}
-
-export interface ProjectMeta {
-  project: Project;
-  links: Links;
-}
-
-export interface Project {
-  id: number;
-  title: string;
-  slug: string;
-  header_image: string;
-  tagline: string;
-  description: string;
-  author: string;
-  youtube?: string;
-  screenshots: string[];
-  spotlight: number;
-  isValidated: number;
-  tags: Tag[];
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Tag {
-  id: number;
-  name: string;
-}
-
-export interface Links {
-  self: string;
-  collection: string;
-}
-
-export interface PaginationLinks {
-  first: string;
-  last: string;
-  prev: unknown;
-  next: string;
-}
-
-export interface Meta {
-  current_page: number;
-  from: number;
-  last_page: number;
-  links: Link[];
-  path: string;
-  per_page: number;
-  to: number;
-  total: number;
-}
-
-export interface Link {
-  url?: string;
-  label: string;
-  active: boolean;
 }
