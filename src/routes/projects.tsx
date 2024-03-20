@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ProjectMeta } from "../types/projects";
 import useProjects from "../hooks/useProjects";
+import Tags from "../components/Tags";
 
 export const Route = createFileRoute("/projects")({
   component: Projects,
@@ -12,7 +13,7 @@ function Projects() {
   return (
     <>
       <section className="w-full text-gray-600 body-font ">
-        <div className="container flex flex-wrap justify-center">
+        <div className="container flex flex-wrap justify-center gap-4">
           {projects.map(({ project, links }: ProjectMeta) => (
             <div
               key={project.id}
@@ -52,7 +53,8 @@ function Projects() {
             </div>
           ))}
         </div>
-      </section>{" "}
+        <Tags />
+      </section>
     </>
   );
 }
