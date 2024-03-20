@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Link, createLazyFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 
-export const Route = createLazyFileRoute("/projects")({
+export const Route = createFileRoute("/projects")({
   component: Projects,
 });
 
@@ -23,7 +23,7 @@ function Projects() {
 
   return (
     <>
-      <section className="text-gray-600 body-font w-full ">
+      <section className="w-full text-gray-600 body-font ">
         <div className="container flex flex-wrap justify-center">
           {projects.map(({ project, links }: ProjectMeta) => (
             <div
@@ -41,10 +41,7 @@ function Projects() {
                 </h2>
                 <div className="flex flex-wrap items-center ">
                   <Link
-                    to="/projects/detail"
-                    params={{
-                      postUrl: links.self,
-                    }}
+                    to="/detail"
                     href={links.self}
                     className="inline-flex items-center text-xs text-indigo-600 md:mb-2 lg:mb-0"
                   >
