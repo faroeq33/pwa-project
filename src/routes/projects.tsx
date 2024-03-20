@@ -12,7 +12,8 @@ function Projects() {
 
   return (
     <>
-      <section className="w-full text-gray-600 body-font ">
+      <section className="w-full h-screen text-gray-600 body-font">
+        <div className="p-4 text"></div>
         <div className="container flex flex-wrap justify-center gap-4">
           {projects.map(({ project, links }: ProjectMeta) => (
             <div
@@ -52,8 +53,8 @@ function Projects() {
               </div>
             </div>
           ))}
+          <Tags />
         </div>
-        <Tags />
       </section>
     </>
   );
