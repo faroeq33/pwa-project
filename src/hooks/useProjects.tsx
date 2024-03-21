@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 
 function useProjects() {
@@ -8,13 +7,15 @@ function useProjects() {
     // Only fetch projects if there are none
     if (projects.length > 0) return;
 
-    axios
-      .get("https://cmgt.hr.nl/api/projects/?page=1")
+    fetch("https://cmgt.hr.nl/api/projects/?page=1")
       .then((response) => {
-        // console.log(response.data.data as ProjectMeta[]);
-        const responseData = response.data.data;
-
-        setProjects(responseData);
+        if (!response.ok) {
+          throw new Error("Error fetching projects");
+        }
+        return response.json();
+      })
+      .then((responseData) => {
+        setProjects(responseData.data);
       })
       .catch((error) => {
         console.error("Error fetching projects:", error);

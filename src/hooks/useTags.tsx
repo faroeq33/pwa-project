@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 interface Tag {
   id: number;
@@ -12,13 +11,15 @@ function useTags() {
     // Only fetch projects if there are none
     if (items.length > 0) return;
 
-    axios
-      .get("https://cmgt.hr.nl/api/tags")
+    fetch("https://cmgt.hr.nl/api/tags")
       .then((response) => {
-        // console.log(response.data.data as ProjectMeta[]);
-        const responseData = response.data.data as Tag[];
-
-        setItems(responseData);
+        if (!response.ok) {
+          throw new Error("Error fetching tags");
+        }
+        return response.json();
+      })
+      .then((responseData) => {
+        setItems(responseData.data);
       })
       .catch((error) => {
         console.error("Error fetching tags:", error);
