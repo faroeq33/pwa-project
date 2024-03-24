@@ -13,6 +13,9 @@ function Nav() {
       >
         Projects
       </Link>
+      <Link to="/tags" className="underline [&.active]:font-bold flex-initial">
+        Tags
+      </Link>
       <OnlineStatusLayout className="justify-self-end" />
     </div>
   );

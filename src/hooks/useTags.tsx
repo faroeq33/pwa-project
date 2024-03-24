@@ -29,6 +29,7 @@ function useTags() {
   return {
     tags: items,
     setTags: setItems,
+    isOnline: navigator.onLine ? true : false,
   };
 }
 export default useTags;

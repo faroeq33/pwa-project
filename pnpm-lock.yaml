@@ -28,6 +28,9 @@ devDependencies:
   '@types/react-dom':
     specifier: ^18.2.21
     version: 18.2.22
+  '@types/serviceworker':
+    specifier: ^0.0.84
+    version: 0.0.84
   '@typescript-eslint/eslint-plugin':
     specifier: ^7.1.1
     version: 7.3.1(@typescript-eslint/parser@7.3.1)(eslint@8.57.0)(typescript@5.4.2)
@@ -869,6 +872,10 @@ packages:
 
   /@types/semver@7.5.8:
     resolution: {integrity: sha512-I8EUhyrgfLrcTkzV3TSsGyl1tSuPrEDzr0yd5m90UgNxQkyDXULk3b6MlQqTCpZpNtWe1K0hzclnZkTcLBe2UQ==}
+    dev: true
+
+  /@types/serviceworker@0.0.84:
+    resolution: {integrity: sha512-xRomr+/H9tj1uVAYBdMk40knIkgOXg+k/tT+gOXn2D7lc+zQW+0Jv1fpTKY5UEuivF5OyWvAWsKjWUL2865yGQ==}
     dev: true
 
   /@typescript-eslint/eslint-plugin@7.3.1(@typescript-eslint/parser@7.3.1)(eslint@8.57.0)(typescript@5.4.2):

@@ -11,11 +11,17 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as TagsImport } from './routes/tags'
 import { Route as ProjectsImport } from './routes/projects'
 import { Route as DetailImport } from './routes/detail'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
+
+const TagsRoute = TagsImport.update({
+  path: '/tags',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const ProjectsRoute = ProjectsImport.update({
   path: '/projects',
@@ -48,6 +54,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsImport
       parentRoute: typeof rootRoute
     }
+    '/tags': {
+      preLoaderRoute: typeof TagsImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -57,6 +67,7 @@ export const routeTree = rootRoute.addChildren([
   IndexRoute,
   DetailRoute,
   ProjectsRoute,
+  TagsRoute,
 ])
 
 /* prettier-ignore-end */
