@@ -1,9 +1,10 @@
 const CACHE_NAME = "pwa-cache-v1";
 const CACHE_ALLOW_LIST = [CACHE_NAME];
+
 // Import localforage script
-// importScripts(
-//   "https://cdn.jsdelivr.net/npm/localforage/dist/localforage.min.js"
-// );
+importScripts(
+  "https://cdn.jsdelivr.net/npm/localforage/dist/localforage.min.js"
+);
 
 // self.addEventListener("install", (event) => {
 /*
@@ -14,25 +15,25 @@ Installation takes place. An install event is always the first one sent to a ser
 // event.waitUntil();
 // });
 
-self.addEventListener("activate", (event) => {
-  /*
+// self.addEventListener("activate", (event) => {
+/*
 The activate event of the ServiceWorkerGlobalScope interface is fired when a ServiceWorkerRegistration acquires a new ServiceWorkerRegistration.active worker.
 */
 
-  console.log("Service Worker activated");
+//   console.log("Service Worker activated");
 
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (!CACHE_ALLOW_LIST.includes(cacheName)) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
-});
+//   event.waitUntil(
+//     caches.keys().then((cacheNames) => {
+//       return Promise.all(
+//         cacheNames.map((cacheName) => {
+//           if (!CACHE_ALLOW_LIST.includes(cacheName)) {
+//             return caches.delete(cacheName);
+//           }
+//         })
+//       );
+//     })
+//   );
+// });
 
 // Listen for fetch requests
 self.addEventListener("fetch", (event) => {
@@ -40,7 +41,6 @@ self.addEventListener("fetch", (event) => {
 
   // Save projects to IndexDB when online
   if (url.origin === "https://cmgt.hr.nl" && url.pathname === "/api/projects") {
-    /*
     event.respondWith(
       fetch(event.request)
         .then((response) => {
@@ -52,7 +52,7 @@ self.addEventListener("fetch", (event) => {
           return loadFromIndexedDB();
         })
     );
-    */
+
     // Only return tags when service is online, otherwise return http error
   } else if (
     url.origin === "https://cmgt.hr.nl" &&
@@ -96,7 +96,7 @@ self.addEventListener("fetch", (event) => {
 });
 
 // Function to store the projecst to the IndexDB
-/*
+
 function saveDataToIndexedDB(response) {
   const dataStore = localforage.createInstance({
     name: "prg9-store",
@@ -136,5 +136,3 @@ function loadFromIndexedDB() {
       throw error;
     });
 }
-
-*/

@@ -1,6 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ProjectMeta } from "../types/projects";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/projects")({
   component: Projects,
@@ -9,33 +9,36 @@ export const Route = createFileRoute("/projects")({
 // TODO: Should I export react component when using tanstack router?
 function Projects() {
   const [projects, setProjects] = useState<ProjectMeta[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log("Fetching projects");
-    // Only fetch projects if there are none
-    // if (projects.length > 0) return;
-
-    fetch("https://cmgt.hr.nl/api/projects/?page=1")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Error fetching projects");
-        }
-        return response.json();
-      })
-      .then((responseData) => {
-        setProjects(responseData.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching projects:", error);
-      });
+    fetchData();
   }, []);
 
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(`https://cmgt.hr.nl/api/projects`, {
+        headers: {
+          Accept: "application/json",
+        },
+      });
+      const json = await response.json();
+      setProjects(json.data);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      setIsLoading(false);
+    }
+  };
   return (
     <>
       <section className="w-full h-screen text-gray-600 body-font">
         <div className="p-4 text"></div>
         <div className="flex flex-wrap justify-center gap-4">
-          {projects.map(({ project, links }: ProjectMeta) => {
+          {isLoading && <div className="animate-pulse">Loading....</div>}
+
+          {projects?.map(({ project, links }) => {
             return (
               <div
                 key={project.id}
