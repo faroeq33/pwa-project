@@ -1,105 +1,36 @@
-const CACHE_NAME = "pwa-cache-v1";
-const CACHE_ALLOW_LIST = [CACHE_NAME];
-
+const CACHE_VERSION = "showcase-cache-v1";
 // Import localforage script
+// eslint-disable-next-line no-undef
 importScripts(
   "https://cdn.jsdelivr.net/npm/localforage/dist/localforage.min.js"
 );
 
-// self.addEventListener("install", (event) => {
-/*
-Installation takes place. An install event is always the first one sent to a service worker (this can be used to start the process of populating an IndexedDB, and caching site assets). During this step, the application is preparing to make everything available for use offline.
-
-*/
-// TODO: uitleggen wat er bij de install event gebeurt
-// event.waitUntil();
-// });
-
-// self.addEventListener("activate", (event) => {
-/*
-The activate event of the ServiceWorkerGlobalScope interface is fired when a ServiceWorkerRegistration acquires a new ServiceWorkerRegistration.active worker.
-*/
-
-//   console.log("Service Worker activated");
-
-//   event.waitUntil(
-//     caches.keys().then((cacheNames) => {
-//       return Promise.all(
-//         cacheNames.map((cacheName) => {
-//           if (!CACHE_ALLOW_LIST.includes(cacheName)) {
-//             return caches.delete(cacheName);
-//           }
-//         })
-//       );
-//     })
-//   );
-// });
-
-// Listen for fetch requests
+// Luister naar fetch-verzoeken
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
+  const match = (url, path) =>
+    url.origin === "https://cmgt.hr.nl" && url.pathname === path;
 
-  // Save projects to IndexDB when online
-  if (url.origin === "https://cmgt.hr.nl" && url.pathname === "/api/projects") {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          const responseClone = response.clone();
-          saveDataToIndexedDB(responseClone);
-          return response;
-        })
-        .catch(() => {
-          return loadFromIndexedDB();
-        })
-    );
-
-    // Only return tags when service is online, otherwise return http error
-  } else if (
-    url.origin === "https://cmgt.hr.nl" &&
-    url.pathname === "/api/tags"
-  ) {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          //TODO: response ok?
-          return response;
-        })
-        .catch(() => {
-          return new Response(
-            JSON.stringify({
-              message: "Online connection is required to fetch tags",
-            }),
-            {
-              status: 503,
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-        })
-    );
-    // For all other requests, get data from the cache or make the request when online
-  } else {
-    event.respondWith(
-      caches.match(event.request).then(function (response) {
-        if (response) {
-          return response;
-        } else {
-          return fetch(event.request).then(function (res) {
-            return caches.open(CACHE_NAME).then(function (cache) {
-              cache.put(event.request.url, res.clone());
-              return res;
-            });
-          });
-        }
-      })
-    );
+  switch (true) {
+    case match(url, "/api/projects"):
+      // Sla projecten op in IndexedDB wanneer online
+      event.respondWith(networkFirstThenCache(event.request));
+      break;
+    case match(url, "/api/tags"):
+      // Geef alleen tags terug wanneer de service online is, anders geef een http-fout terug
+      event.respondWith(networkOnly(event));
+      break;
+    default:
+      // Voor alle andere verzoeken, haal gegevens op uit de cache of doe het verzoek wanneer online
+      event.respondWith(cacheFirst(event));
+      break;
   }
 });
 
-// Function to store the projecst to the IndexDB
-
+// Functie om de projecten op te slaan in IndexedDB
 function saveDataToIndexedDB(response) {
   const dataStore = localforage.createInstance({
-    name: "prg9-store",
+    name: "showcase-store",
   });
   response.json().then((data) => {
     data.data.forEach((project) => {
@@ -107,7 +38,7 @@ function saveDataToIndexedDB(response) {
         .setItem(`project-${project.project.id}`, project)
         .catch((error) =>
           console.error(
-            `Error saving project ${project.project.id} to IndexedDB:`,
+            `Fout bij het opslaan van project ${project.project.id} in IndexedDB:`,
             error
           )
         );
@@ -115,10 +46,10 @@ function saveDataToIndexedDB(response) {
   });
 }
 
-// Function to load the projecst from the IndexDB
+// Functie om de projecten op te halen uit IndexedDB
 function loadFromIndexedDB() {
   const dataStore = localforage.createInstance({
-    name: "prg9-store",
+    name: "showcase-store",
   });
   return dataStore
     .keys()
@@ -132,7 +63,53 @@ function loadFromIndexedDB() {
       });
     })
     .catch((error) => {
-      console.error("Error loading data from IndexedDB:", error);
+      console.error("Fout bij het laden van gegevens uit IndexedDB:", error);
       throw error;
+    });
+}
+function networkOnly(event) {
+  return fetch(event.request)
+    .then((response) => {
+      return response;
+    })
+    .catch(() => {
+      return new Response(
+        JSON.stringify({
+          message: "Online verbinding is vereist om tags op te halen",
+        }),
+        {
+          status: 503,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    });
+}
+
+function cacheFirst(event) {
+  return caches.match(event.request).then((response) => {
+    // Als de cache een reactie heeft, geef deze terug
+    if (response) {
+      return response;
+    }
+
+    // anders doe het verzoek wanneer online
+    return fetch(event.request).then((res) => {
+      return caches.open(CACHE_VERSION).then((cache) => {
+        cache.put(event.request.url, res.clone());
+        return res;
+      });
+    });
+  });
+}
+
+function networkFirstThenCache(request) {
+  return fetch(request)
+    .then((response) => {
+      const responseClone = response.clone();
+      saveDataToIndexedDB(responseClone);
+      return response;
+    })
+    .catch(() => {
+      return loadFromIndexedDB();
     });
 }

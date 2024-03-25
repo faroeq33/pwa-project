@@ -1,12 +1,11 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ProjectMeta } from "../types/projects";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/projects")({
   component: Projects,
 });
 
-// TODO: Should I export react component when using tanstack router?
 function Projects() {
   const [projects, setProjects] = useState<ProjectMeta[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -16,20 +15,15 @@ function Projects() {
   }, []);
 
   const fetchData = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(`https://cmgt.hr.nl/api/projects`, {
-        headers: {
-          Accept: "application/json",
-        },
-      });
-      const json = await response.json();
-      setProjects(json.data);
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Error fetching projects:", error);
-      setIsLoading(false);
-    }
+    setIsLoading(true);
+    const response = await fetch(`https://cmgt.hr.nl/api/projects?page=1`, {
+      headers: {
+        Accept: "application/json",
+      },
+    });
+    const json = await response.json();
+    setProjects(json.data);
+    setIsLoading(false);
   };
   return (
     <>
